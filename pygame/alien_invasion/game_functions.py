@@ -67,14 +67,27 @@ def update_screen(ai_settings,screen,ship,bullets,aliens):
         
     #Updates the screen with the most recent graphics
     pygame.display.flip()
+    
+def check_bullet_alien_collisions(ai_settings,screen,ship,bullets,aliens):
+    #Verifies if any bullet has strike any alien. If yes, destroys the bullet
+    #   and the alien.
+    collisions = pygame.sprite.groupcollide(bullets,aliens,True,True)
+    
+    if len(aliens) == 0:
+        #Detroys the bullets not used after vanishing the fleet and creates a
+        #   new fleet
+        bullets.empty()
+        create_fleet(ai_settings,screen,ship,aliens)
         
-def update_bullets(bullets):        
+def update_bullets(ai_settings,screen,ship,aliens,bullets):        
     """Updates the bullets position and vanish the old ones"""
     #Vanish the bullets that have gone upper on the screen
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
 #        #print(len(bullets))python
+            
+    check_bullet_alien_collisions(ai_settings,screen,ship,bullets,aliens)
 
 def get_number_aliens_x(ai_settings,alien_width):
     #Determines the number of aliens per line
@@ -112,4 +125,24 @@ def create_fleet(ai_settings,screen,ship,aliens):
         for alien_number in range (number_aliens_x):
             #Creates an alien and alocates it in line with others
             create_alien(ai_settings,screen,aliens,alien_number,alien_width,row_number)
+
+def check_fleet_edges(ai_settings,aliens):
+    """Acts when any alien touches the screen edges"""
+    for alien in aliens.sprites():
+        if alien.check_edges():
+            change_fleet_directions(ai_settings,aliens)
+            break
+
+def change_fleet_directions(ai_settings,aliens):
+    """Makes the whole fleet to go down and swtich its direction"""
+    for alien in aliens.sprites():
+        alien.rect.y += ai_settings.fleet_drop_speed
+    ai_settings.fleet_direction *= -1
+        
+def update_aliens(ai_settings,aliens):
+    """Verifies if the fleet reached one edge and updates the positions of all
+        aliens in the fleet"""
+    check_fleet_edges(ai_settings,aliens)
+    aliens.update()
+    
     
