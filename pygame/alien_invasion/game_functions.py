@@ -143,23 +143,27 @@ def change_fleet_directions(ai_settings,aliens):
 
 def ship_hit(ai_settings,stats,screen,ship,bullets,aliens):
     """Returns when the spaceship is hit by an alien"""
-    #Decreases ship_left
-    stats.reset_stats(-1)
-    
-    #Makes a short pause to allow the player observes that the spaceship has
-    #   been hit
-    sleep(0.5)
-    
-    #Empty the aliens and bullets lists
-    aliens.empty()
-    bullets.empty()
-    
-    #Creates a new fleet and centralizes the spaceship
-    create_fleet(ai_settings,screen,ship,aliens)
-    ship.center_ship()
-    
-    #Makes a pause before starting again
-    sleep(5)
+    if stats.ships_left > 0:
+        #Decreases ship_left
+        stats.reset_stats(-1)
+        
+        #Makes a short pause to allow the player observes that the spaceship has
+        #   been hit
+        sleep(3)
+        
+        #Empty the aliens and bullets lists
+        aliens.empty()
+        bullets.empty()
+        
+        #Creates a new fleet and centralizes the spaceship
+        create_fleet(ai_settings,screen,ship,aliens)
+        ship.center_ship()
+        
+        #Makes a pause before starting again
+        sleep(.5)
+        
+    else:
+        stats.game_active = False
     
 def check_aliens_bottom(ai_settings,stats,screen,ship,bullets,aliens):
     """Verifies if an alien reached the end of the screen"""
