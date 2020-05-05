@@ -30,7 +30,7 @@ class Settings():
         
         #Alien configuration
         self.alien_speed_factor = 1
-        self.fleet_drop_speed = 100
+        self.fleet_drop_speed = 10
         #fleet_direction = 1 means to the right; -1 means to the left
         self.fleet_direction = 1
         

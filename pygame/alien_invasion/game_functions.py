@@ -149,7 +149,7 @@ def ship_hit(ai_settings,stats,screen,ship,bullets,aliens):
         
         #Makes a short pause to allow the player observes that the spaceship has
         #   been hit
-        sleep(3)
+        sleep(2)
         
         #Empty the aliens and bullets lists
         aliens.empty()
@@ -169,7 +169,9 @@ def check_aliens_bottom(ai_settings,stats,screen,ship,bullets,aliens):
     """Verifies if an alien reached the end of the screen"""
     screen_rect = screen.get_rect()
     for alien in aliens.sprites():
-        if alien.rect.bottom >= screen_rect.bottom:
+        #Add pixel(s) to improve the game visual when the alien reaches the
+        #   bottom
+        if alien.rect.bottom >= screen_rect.bottom + 9:
             #Do the same for the spaceship has been hit
             ship_hit(ai_settings,stats,screen,ship,bullets,aliens)
             break
