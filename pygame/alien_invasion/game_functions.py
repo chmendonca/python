@@ -7,6 +7,8 @@ necessary to be in the main module alien_invasion.py. It is better to make the
 code clear and easier to understand
 """
 
+from time import sleep
+
 import pygame
 import sys
 
@@ -138,11 +140,46 @@ def change_fleet_directions(ai_settings,aliens):
     for alien in aliens.sprites():
         alien.rect.y += ai_settings.fleet_drop_speed
     ai_settings.fleet_direction *= -1
+
+def ship_hit(ai_settings,stats,screen,ship,bullets,aliens):
+    """Returns when the spaceship is hit by an alien"""
+    #Decreases ship_left
+    stats.reset_stats(-1)
+    
+    #Makes a short pause to allow the player observes that the spaceship has
+    #   been hit
+    sleep(0.5)
+    
+    #Empty the aliens and bullets lists
+    aliens.empty()
+    bullets.empty()
+    
+    #Creates a new fleet and centralizes the spaceship
+    create_fleet(ai_settings,screen,ship,aliens)
+    ship.center_ship()
+    
+    #Makes a pause before starting again
+    sleep(5)
+    
+def check_aliens_bottom(ai_settings,stats,screen,ship,bullets,aliens):
+    """Verifies if an alien reached the end of the screen"""
+    screen_rect = screen.get_rect()
+    for alien in aliens.sprites():
+        if alien.rect.bottom >= screen_rect.bottom:
+            #Do the same for the spaceship has been hit
+            ship_hit(ai_settings,stats,screen,ship,bullets,aliens)
+            break
         
-def update_aliens(ai_settings,aliens):
+def update_aliens(ai_settings,stats,screen,ship,bullets,aliens):
     """Verifies if the fleet reached one edge and updates the positions of all
         aliens in the fleet"""
     check_fleet_edges(ai_settings,aliens)
     aliens.update()
     
+    #Verifies if there is a colision between aliens and spaceship
+    if pygame.sprite.spritecollideany(ship,aliens):
+        ship_hit(ai_settings,stats,screen,ship,bullets,aliens)
+        
+    #Verifies if any alien has reached the bottom of the screen
+    check_aliens_bottom(ai_settings,stats,screen,ship,bullets,aliens)
     

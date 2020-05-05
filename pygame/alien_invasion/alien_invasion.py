@@ -13,9 +13,11 @@ ground (the bottom of screen), the player will loose one spaceship (life).
 After loosing three spaceships (all lifes), the game will over. 
 """
 
+from pygame.sprite import Group
+
 import pygame
 
-from pygame.sprite import Group
+from game_stats import GameStats
 from settings import Settings
 from ship import Ship
 
@@ -28,6 +30,9 @@ def run_game():
     screen = pygame.display.set_mode((ai_settings.screen_width,
                                       ai_settings.screen_height)) #Issue1
     pygame.display.set_caption("Alien Invasion")
+    
+    #Creates an instance to store the statistic data from the game
+    stats = GameStats(ai_settings)
     
     #creates a spaceship (instance)
     ship=Ship(ai_settings,screen)
@@ -45,7 +50,7 @@ def run_game():
         ship.update()
         bullets.update()
         gf.update_bullets(ai_settings,screen,ship,aliens,bullets)
-        gf.update_aliens(ai_settings,aliens)
+        gf.update_aliens(ai_settings,stats,screen,ship,bullets,aliens)
         gf.update_screen(ai_settings,screen,ship,bullets,aliens)
     
 run_game()

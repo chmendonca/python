@@ -16,10 +16,12 @@ class Settings():
         self.screen_height = 650
         self.bg_color = (230,230,230)
         
+        #Spaceship configuration
         #Increase of ship speed to 1.5 pixels instead of 1
         self.ship_speed_factor = 1.5
+        self.ship_limit = 3
         
-        #Configurating the bullets
+        #Bullets configuration
         self.bullet_speed_factor = 2
         self.bullet_width = 3
         self.bullet_height = 15
@@ -28,7 +30,7 @@ class Settings():
         
         #Alien configuration
         self.alien_speed_factor = 1
-        self.fleet_drop_speed = 10
+        self.fleet_drop_speed = 100
         #fleet_direction = 1 means to the right; -1 means to the left
         self.fleet_direction = 1
         
