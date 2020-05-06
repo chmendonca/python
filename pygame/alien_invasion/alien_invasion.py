@@ -17,6 +17,7 @@ from pygame.sprite import Group
 
 import pygame
 
+from button import Button
 from game_stats import GameStats
 from settings import Settings
 from ship import Ship
@@ -30,6 +31,9 @@ def run_game():
     screen = pygame.display.set_mode((ai_settings.screen_width,
                                       ai_settings.screen_height)) #Issue1
     pygame.display.set_caption("Alien Invasion")
+    
+    #Creates the play button
+    play_button = Button(ai_settings,screen,"Play")
     
     #Creates an instance to store the statistic data from the game
     stats = GameStats(ai_settings)
@@ -55,6 +59,7 @@ def run_game():
         else:
             aliens.empty()
             bullets.empty()
-        gf.update_screen(ai_settings,screen,ship,bullets,aliens)
+        gf.update_screen(ai_settings,screen,stats,ship,bullets,aliens,
+                         play_button)
     
 run_game()

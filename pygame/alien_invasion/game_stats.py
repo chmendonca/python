@@ -15,8 +15,10 @@ class GameStats():
         self.ships_left = self.ai_settings.ship_limit
         self.reset_stats(0)
         
-        #Initializes the game in an active state
-        self.game_active = True
+        #Initializes the game in an inactive state
+        #It will allow to insert some information on the screen before the
+        #   playing the game, such as a "play button" to start the game
+        self.game_active = False
         
         print('initialized')
         

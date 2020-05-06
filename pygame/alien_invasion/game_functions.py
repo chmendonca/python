@@ -14,6 +14,7 @@ import sys
 
 from alien import Alien
 from bullet import Bullet
+from button import Button
 
 def fire_bullet(ai_settings,screen,ship,bullets):
     #Creates a new bullet and inserts it on the Group
@@ -58,7 +59,7 @@ def check_events(ai_settings,screen,ship,bullets):
             check_keyup_events(event,ship)
         
                     
-def update_screen(ai_settings,screen,ship,bullets,aliens):
+def update_screen(ai_settings,screen,stats,ship,bullets,aliens,play_button):
     """Updaate the screen images and returns to the new screen"""
     #Redraw the screen every cycle
     screen.fill(ai_settings.bg_color) #Issue3
@@ -66,6 +67,10 @@ def update_screen(ai_settings,screen,ship,bullets,aliens):
         bullet.draw_bullet()
     ship.blitme()
     aliens.draw(screen)
+    
+    #Draws the play button if the game is not active
+    if not stats.game_active:
+        play_button.draw_button()
         
     #Updates the screen with the most recent graphics
     pygame.display.flip()
