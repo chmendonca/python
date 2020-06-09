@@ -1,1 +1,0 @@
-Este projeto é parte do livro Curso Intensivo De Python (Python Crash Course)
