@@ -44,8 +44,27 @@ def check_keyup_events(event,ship):
         ship.moving_right = False
     elif event.key == pygame.K_LEFT:
         ship.moving_left = False
+            
+def check_play_button(ai_settings,screen,stats,ship,aliens,bullets,play_button,mouse_x,mouse_y):
+    """Starts a new game when the player hits play button"""
+    button_clicked = play_button.rect.collidepoint(mouse_x,mouse_y)
+    if button_clicked and not stats.game_active:
+        #Hidding the mouse arrow
+        pygame.mouse.set_visible(False)
+        
+        #Restarts the game stats data
+        stats.reset_stats(-1)
+        stats.game_active = True
+        
+        #Vanishes the aliens and bullets lists
+        aliens.empty()
+        bullets.empty()
+        
+        #Creates a new fleet and centralize the new ship
+        #create_fleet(ai_settings,screen,ship,aliens)
+        ship.center_ship()
 
-def check_events(ai_settings,screen,ship,bullets):
+def check_events(ai_settings,stats,screen,ship,aliens,bullets,play_button):
     """Watches and respond to keyboard and mouse events"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT: #Issue2
@@ -57,7 +76,10 @@ def check_events(ai_settings,screen,ship,bullets):
             check_keydown_events(event,ai_settings,screen,ship,bullets)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event,ship)
-        
+            
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            check_play_button(ai_settings,screen,stats,ship,aliens,bullets,play_button,mouse_x,mouse_y) 
                     
 def update_screen(ai_settings,screen,stats,ship,bullets,aliens,play_button):
     """Updaate the screen images and returns to the new screen"""
@@ -169,6 +191,9 @@ def ship_hit(ai_settings,stats,screen,ship,bullets,aliens):
         
     else:
         stats.game_active = False
+        #Makes the mouse visible again when the game finishes (it was hidden
+        #after clicking to start the game)
+        pygame.mouse.set_visible(True)
     
 def check_aliens_bottom(ai_settings,stats,screen,ship,bullets,aliens):
     """Verifies if an alien reached the end of the screen"""
