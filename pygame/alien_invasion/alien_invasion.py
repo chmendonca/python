@@ -57,7 +57,7 @@ def run_game():
             ship.update()
             bullets.update()
             gf.update_bullets(ai_settings,stats,screen,ship,aliens,bullets,sb)
-            gf.update_aliens(ai_settings,stats,screen,ship,bullets,aliens)
+            gf.update_aliens(ai_settings,stats,screen,ship,bullets,aliens,sb)
         else:
             aliens.empty()
             bullets.empty()

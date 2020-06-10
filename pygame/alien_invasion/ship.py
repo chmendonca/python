@@ -8,9 +8,12 @@ behaviors
 
 import pygame
 
-class Ship():
+from pygame.sprite import Sprite
+
+class Ship(Sprite):
     def __init__(self,ai_settings,screen):
         """Initializes the spaceship and defines its initial position"""
+        super(Ship,self).__init__()
         self.screen = screen
         self.ai_settings = ai_settings
         
