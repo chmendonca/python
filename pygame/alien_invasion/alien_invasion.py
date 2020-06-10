@@ -20,6 +20,7 @@ import pygame
 from button import Button
 from game_stats import GameStats
 from settings import Settings
+from scoreboard import Scoreboard
 from ship import Ship
 
 import game_functions as gf 
@@ -35,9 +36,10 @@ def run_game():
     #Creates the play button
     play_button = Button(ai_settings,screen,"Play")
     
-    #Creates an instance to store the statistic data from the game
+    #Creates an instance to store the statistic data from the game and the scoreboard
     stats = GameStats(ai_settings)
-    
+    sb = Scoreboard(ai_settings,screen,stats)
+
     #creates a spaceship (instance)
     ship=Ship(ai_settings,screen)
     
@@ -50,16 +52,16 @@ def run_game():
     
     #Starts the game main loop
     while True:
-        gf.check_events(ai_settings,stats,screen,ship,aliens,bullets,play_button)
+        gf.check_events(ai_settings,stats,screen,ship,aliens,bullets,play_button,sb)
         if stats.game_active:
             ship.update()
             bullets.update()
-            gf.update_bullets(ai_settings,screen,ship,aliens,bullets)
+            gf.update_bullets(ai_settings,stats,screen,ship,aliens,bullets,sb)
             gf.update_aliens(ai_settings,stats,screen,ship,bullets,aliens)
         else:
             aliens.empty()
             bullets.empty()
         gf.update_screen(ai_settings,screen,stats,ship,bullets,aliens,
-                         play_button)
+                         play_button,sb)
     
 run_game()

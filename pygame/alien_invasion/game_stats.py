@@ -13,18 +13,23 @@ class GameStats():
         """Initializes the stats data"""
         self.ai_settings = ai_settings
         self.ships_left = self.ai_settings.ship_limit
-        self.reset_stats(0)
+
+        #The highest score will never be reinitialized
+        self.high_score = 0
         
         #Initializes the game in an inactive state
         #It will allow to insert some information on the screen before the
         #   playing the game, such as a "play button" to start the game
         self.game_active = False
         
-        print('initialized')
+        self.reset_stats(0)
         
     def reset_stats(self,limit):
         """Initializes the stats data that could change during the game"""
         self.ships_left = self.ships_left+limit
-        print(self.ships_left)
+        #print(self.ships_left)
 #        ships_left = self.ships_left
 #        return ships_left
+        if not self.game_active:
+            self.score = 0
+        self.level = 1
