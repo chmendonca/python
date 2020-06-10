@@ -32,4 +32,5 @@ class GameStats():
 #        return ships_left
         if not self.game_active:
             self.score = 0
-        self.level = 1
+            self.ships_left = 3
+            self.level = 1
