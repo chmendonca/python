@@ -27,7 +27,7 @@ class Covid(Sprite):
         #   on the screen subtracted one, to set it not closed to the end of
         #   screen.
         self.rect.x = self.rect.width * \
-                    (int(self.h_settings.screen_width / self.rect.width) - 1)
+                    (int(self.h_settings.screen_width / (self.rect.width)) - 1)
         self.rect.y = self.rect.height
         
         #Stores the exactly position of the covid

@@ -59,6 +59,9 @@ def check_play_button(h_settings,screen,stats,play_button,hero,covids,bullets,
     """Starts a new game when the player hits the start button"""
     button_clicked = play_button.rect.collidepoint(mouse_x,mouse_y)
     if button_clicked and not stats.game_active:
+        #Restarts the game initial conditions
+        h_settings.initialize_dynamic_settings()
+        
         #Hidden the mouse arrow
         pygame.mouse.set_visible(False)
         #Reinitializes the game stats and data
@@ -117,6 +120,7 @@ def check_bullet_covid_collisions(h_settings,screen,hero,covids,bullets):
     #   is desinfected.
     if len(covids) == 0:
         bullets.empty()
+        h_settings.increase_speed()
         create_fleet(h_settings,screen,hero,covids)    
 
             
