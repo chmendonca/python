@@ -7,6 +7,7 @@ behaviors
 """
 
 import pygame
+from pygame.sprite import Sprite
 
 class Hero():
     
@@ -66,3 +67,20 @@ class Hero():
         self.moving_down = False
         
         self.update()
+
+class HeroLives(Sprite):
+    
+    def __init__(self,h_settings,screen):
+        """Initializes the hero lives on its initial position"""
+        super(HeroLives, self).__init__()
+        self.screen = screen
+        self.h_settings = h_settings
+        
+        #Uploads the hero image and get the rect
+        self.image = pygame.image.load('images/hero_very_small.bmp')
+        self.rect = self.image.get_rect()
+        self.screen_rect = screen.get_rect()
+    
+    def blitme(self):
+        #Draw the image on the specified position
+        self.screen.blit(self.image,self.rect)

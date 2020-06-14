@@ -13,7 +13,7 @@ class Settings():
     def __init__(self):
         """Initialize the game configs"""
         #Screen configuration
-        self.screen_width = 1100
+        self.screen_width = 1200
         self.screen_height = 680
         self.bg_color = (0,20,50)
         
@@ -48,6 +48,7 @@ class Settings():
         self.hero_speed_factor = 1.5
         self.bullet_speed_factor = 1
         self.covid_horizontal_speed_factor = -10
+        self.alien_points = 50
         #The pandemy direction equals 1 means to the bottom; -1 means to the top
         # The randint ensures an randomly direction when starting the game
         if randint(0,1) == 1:

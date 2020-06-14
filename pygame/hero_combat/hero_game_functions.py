@@ -54,8 +54,8 @@ def check_keyup_events(event,hero):
     elif event.key == pygame.K_DOWN:
         hero.moving_down = False
         
-def check_play_button(h_settings,screen,stats,play_button,hero,covids,bullets,
-                      mouse_x,mouse_y):
+def check_play_button(h_settings,screen,stats,play_button,hero,covids,bullets,sb,
+                        mouse_x,mouse_y):
     """Starts a new game when the player hits the start button"""
     button_clicked = play_button.rect.collidepoint(mouse_x,mouse_y)
     if button_clicked and not stats.game_active:
@@ -66,6 +66,10 @@ def check_play_button(h_settings,screen,stats,play_button,hero,covids,bullets,
         pygame.mouse.set_visible(False)
         #Reinitializes the game stats and data
         stats.reset_stats()
+        sb.prep_score()
+        sb.prep_high_score()
+        sb.prep_level()
+        sb.prep_hero_lives()
         stats.game_active = True
         
         #Empty the covids and vacines lists
@@ -76,7 +80,13 @@ def check_play_button(h_settings,screen,stats,play_button,hero,covids,bullets,
         #create_fleet(h_settings,screen,hero,covids)
         hero.center_hero()
 
-def check_events(h_settings,screen,stats,hero,bullets,covids,play_button):
+def check_high_score(stats,sb):
+    """Checks for a new high score"""
+    if stats.score > stats.high_score:
+        stats.high_score = stats.score
+        sb.prep_high_score()
+
+def check_events(h_settings,screen,stats,hero,bullets,covids,play_button,sb):
     """Watches and respond to keyboard and mouse events"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -91,10 +101,9 @@ def check_events(h_settings,screen,stats,hero,bullets,covids,play_button):
             
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x,mouse_y = pygame.mouse.get_pos()
-            check_play_button(h_settings,screen,stats,play_button,hero,covids,bullets,
-                      mouse_x,mouse_y)
+            check_play_button(h_settings,screen,stats,play_button,hero,covids,bullets,sb,mouse_x,mouse_y)
                     
-def update_screen(h_settings,stats,screen,hero,covids,bullets,play_button):
+def update_screen(h_settings,stats,screen,hero,covids,bullets,play_button,sb):
     """Updaate the screen images and returns to the new screen"""
     #Redraw the screen every cycle
     screen.fill(h_settings.bg_color)
@@ -103,6 +112,9 @@ def update_screen(h_settings,stats,screen,hero,covids,bullets,play_button):
     hero.blitme()
     #covid.blitme() - used for a single covid on screen
     covids.draw(screen)
+
+    #Draws the scoreboard
+    sb.show_score()
     
     #Draws the play button if the game is inactive
     if not stats.game_active:
@@ -111,20 +123,30 @@ def update_screen(h_settings,stats,screen,hero,covids,bullets,play_button):
     #Updates the screen with the most recent graphics
     pygame.display.flip()
     
-def check_bullet_covid_collisions(h_settings,screen,hero,covids,bullets):
+def check_bullet_covid_collisions(h_settings,stats,screen,hero,covids,bullets,sb):
     #Verifies if the bullet has hit the covid. If yes, destroy the covid and 
     #   the bullet
     collisions = pygame.sprite.groupcollide(bullets,covids,True,True)
+    if collisions:
+        for aliens in collisions.values():
+            stats.score += h_settings.alien_points * len(aliens)
+            sb.prep_score()
+        check_high_score(stats,sb)
     
     #Delete the missing bullets and creates a new pandemy when the existent one
     #   is desinfected.
     if len(covids) == 0:
         bullets.empty()
         h_settings.increase_speed()
-        create_fleet(h_settings,screen,hero,covids)    
+        create_fleet(h_settings,screen,hero,covids)  
+
+        #Starts a new level when the pandemy is vanished
+        if stats.score != 0:
+            stats.level += 1
+            sb.prep_level()  
 
             
-def update_bullets(h_settings,screen,hero,covids,bullets):
+def update_bullets(h_settings,stats,screen,hero,covids,bullets,sb):
     """Updates the bullets position, vanish the old ones and avoid overlap"""
     #Gets the screen rect
     screen_rect = screen.get_rect()
@@ -143,7 +165,7 @@ def update_bullets(h_settings,screen,hero,covids,bullets):
         if len(bullets_rect_left_list) > 1:
             #if there is an overlap between the previous bullet plus 50 pixels
             #   removes the bullet from the list
-            if bullets_rect_right_list[-1] >= bullets_rect_left_list[-2] - 50:
+            if bullets_rect_right_list[-1] >= bullets_rect_left_list[-2] - 25:
                 bullets.remove(bullet)
         
         #Vanishes the bullets that overpass the right side of the screen
@@ -151,7 +173,7 @@ def update_bullets(h_settings,screen,hero,covids,bullets):
             bullets.remove(bullet)
     #print(len(bullets))
     
-    check_bullet_covid_collisions(h_settings,screen,hero,covids,bullets)
+    check_bullet_covid_collisions(h_settings,stats,screen,hero,covids,bullets,sb)
 
 def get_number_covids_y(h_settings,covid_height):
     """Determines the number of covids in a column"""
@@ -216,12 +238,13 @@ def change_pandemy_direction(h_settings,covids):
         covid.rect.x += h_settings.covid_horizontal_speed_factor
     h_settings.pandemy_direction *= -1
     
-def hero_hit(h_settings,stats,screen,hero,covids,bullets):
+def hero_hit(h_settings,stats,screen,hero,covids,bullets,sb):
     """Returns if the hero has been hit by covids"""
     #Decreases the number of hero lifes
     if stats.heros_left > 0:
         stats.heros_left -= 1
         print(stats.heros_left)
+        sb.prep_hero_lives()
         
         #Sleeps to give time to the player see what happened
         sleep(2)
@@ -244,16 +267,16 @@ def hero_hit(h_settings,stats,screen,hero,covids,bullets):
         pygame.mouse.set_visible(True)
         sleep(0.5)
     
-def check_covids_right(h_settings,stats,screen,hero,covids,bullets):
+def check_covids_right(h_settings,stats,screen,hero,covids,bullets,sb):
     """Verify if any covid has reached the right side of the screen"""
     screen_rect = screen.get_rect()
     for covid in covids.sprites():
         if covid.rect.left < screen_rect.left:
             #Makes the same for covid hitting hero
-            hero_hit(h_settings,stats,screen,hero,covids,bullets)
+            hero_hit(h_settings,stats,screen,hero,covids,bullets,sb)
             break
     
-def update_covids(h_settings,stats,screen,hero,covids,bullets):
+def update_covids(h_settings,stats,screen,hero,covids,bullets,sb):
     """Verifies if at least one covid of the pandemy has reachead the screen
         edge and updates the positions of all covids on the pandemy"""
     check_pandemy_edges(h_settings,covids)
@@ -261,7 +284,7 @@ def update_covids(h_settings,stats,screen,hero,covids,bullets):
     
     #Verifies if there is a collision between any covid and the Hero
     if pygame.sprite.spritecollideany(hero,covids):
-        hero_hit(h_settings,stats,screen,hero,covids,bullets)
+        hero_hit(h_settings,stats,screen,hero,covids,bullets,sb)
         
     #Verifies if any covid has reached the left border of the screen
-    check_covids_right(h_settings,stats,screen,hero,covids,bullets)
+    check_covids_right(h_settings,stats,screen,hero,covids,bullets,sb)

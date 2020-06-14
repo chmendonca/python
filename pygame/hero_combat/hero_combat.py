@@ -22,6 +22,7 @@ import pygame
 from hero import Hero
 from hero_button import Button
 from hero_game_stats import GameStats
+from hero_scoreboard import Scoreboard
 from hero_settings import Settings
 
 import hero_game_functions as hgf
@@ -39,10 +40,10 @@ def run_game():
     #Creates a start button
     play_button = Button(h_settings,screen,"PLAY")
     
-    #Creates an instance to store the game statistics
+    #Creates an instance to store the game statistics and scoreboard panel
     stats = GameStats(h_settings)
-    
-    
+    sb = Scoreboard(h_settings,screen,stats)
+        
     #Creates a hero instance
     h = Hero(h_settings,screen) 
     
@@ -62,16 +63,16 @@ def run_game():
     #Start the main loop
     while True:
         if stats.game_active:
-            hgf.check_events(h_settings,screen,stats,h,bullets,covids,play_button)
+            hgf.check_events(h_settings,screen,stats,h,bullets,covids,play_button,sb)
             h.update()
             bullets.update()
-            hgf.update_bullets(h_settings,screen,h,covids,bullets)
-            hgf.update_covids(h_settings,stats,screen,h,covids,bullets)
+            hgf.update_bullets(h_settings,stats,screen,h,covids,bullets,sb)
+            hgf.update_covids(h_settings,stats,screen,h,covids,bullets,sb)
         else:
             bullets.empty()
             covids.empty()
-            hgf.check_events(h_settings,screen,stats,h,bullets,covids,play_button)
+            hgf.check_events(h_settings,screen,stats,h,bullets,covids,play_button,sb)
             
-        hgf.update_screen(h_settings,stats,screen,h,covids,bullets,play_button)
+        hgf.update_screen(h_settings,stats,screen,h,covids,bullets,play_button,sb)
         
 run_game()
