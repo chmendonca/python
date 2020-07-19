@@ -31,12 +31,12 @@ def usuario_escolhe_jogada(n,m):
         try:
             r = int(input("Quantas peças você vai tirar? "))
         except:
-            print("Digite um número inteiro!")
+            print("Digite um número inteiro maior que 0 e menor ou igual a %s!" %m)
             continue
-        if r <= m:
+        if r > 0 and r <= m:
             break
         else:
-            print("Digite um número inteiro menor ou igual a %s" %m)
+            print("Digite um número inteiro maior que 0 e menor ou igual a %s!" %m)
             continue
     print("\nVocê tirou %s peça(s)" %r)
     
@@ -44,25 +44,19 @@ def usuario_escolhe_jogada(n,m):
 
 def partida():
     """n, number of pieces on table; m, maximum number of pieces to be removed;"""
-    #enterMsg1 = "Entre com o número de peças na mesa (n) e\no número máximo de peças a ser removido por jogada (m)"
-    #enterMsg2 = "Digite n,m: "
     enterMsg1 = "Quantas peças? "
     enterMsg2 = "Limite de peças por jogada? "
     while True:
-        #print (enterMsg1)
-        #i = input(enterMsg2)
-        try:
-            #[n,m] = i.split(",")
-            #[n,m] = [int(n),int(m)]
+         try:
             n = int(input(enterMsg1))
             m = int(input(enterMsg2))
-            if n > m:
+            if n > 0 and m > 0 and n > m:
                 break
             else:
-                print("\nAtenção: 'n' dever ser maior que 'm'")
+                print("\nAtenção: 'n' e 'm' devem ser inteiros maiores que 0 e 'n' dever ser maior que 'm'")
                 continue
-        except:
-            print("\nPor favor insira somente números inteiros!\nAtenção: 'n' dever ser maior que 'm'")
+         except:
+            print("\nPor favor insira somente números inteiros maiores que 0!\nAtenção: 'n' dever ser maior que 'm'")
     
     #following the rules of the exercise, if 'n' is multiple of ('m'+1), the 
     # computer invites you to start the game
