@@ -1,0 +1,16 @@
+tipo,matriz,combinacoes,maior numero variaveis,numero colunas maior variavel,menor numero variaveis,numero colunas menor variavel
+t1,m1,4,2,3,,
+t1,m2,8,2,7,,
+t1,m3,9,3,4,,
+t1,m4,12,2,11,,
+t2,m5,16,2,15,,
+t2,m6,16,4,5,,
+t1,m7,18,3,5,,
+t2,m8,18,3,7,2,1
+t1,m9,25,5,6,,
+t1,m10,27,3,13,,
+t1,m11,32,2,31,,
+t2,m12,32,3,9,2,1
+t2,m13,36,3,12,2,11
+t2,m14,50,5,11,2,1
+t2,m15,64,8,4,4,3
