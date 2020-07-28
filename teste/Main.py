@@ -1,4 +1,5 @@
 import os
+import pathlib
 
 from Dados import Dados as dds
 from MatrizTeste import MatrizTeste as mt
@@ -19,8 +20,21 @@ class main():
 
     
     def calcularMatrizOrtogonal(self):
-        lmo = dds.abrirArquivoCsv(self,os.path.join(os.getcwd(),"lista_matrizes_ortogonais.csv"))
-        print(lmo)
+        lmo = dds.abrirArquivoCsv(self,os.path.join(os.path.dirname(os.path.abspath(__file__)),"mtz_ortogonal\\lista_matrizes_ortogonais.csv"))
+        lmo = mo.filtrandoMatrizOrtogonalMaiorIgualNumeroVariaveis(self,self.n,lmo)
+        lmo = mo.filtrandoMatrizOrtogonalNumeroTotalColunas(self,self.n,lmo)
+
+        #numero_colunas_menor_igual_menor_numero_variaveis = self.n
+
+        tipo = lmo['tipo'] == 't2'
+        lmo = lmo[tipo]
+        print(lmo['tipo'].count())
+        contagem_t2 = lmo['tipo'].count()
+        for t2 in range(contagem_t2):
+            print(t2)
+        
+
+
 
 if __name__ == "__main__":
     m = main()
