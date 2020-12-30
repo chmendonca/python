@@ -5,48 +5,95 @@ Created on Wed Jun 19 05:02:00 2019
 @author: Cassio
 """
 
-# import os
-# from scalpl import Cut
+import os
+from scalpl import Cut
 import time
 
-# import files
-# import dicts2json as dicts
+import dicts2json as dicts
 # import importing.classSelenium_v1 as cSel
-# from jsonCommands_CC_v0 import *
+from jsonCommands_CC_v0 import *
 
 #import importing.cartolaFcScoutsSource_ns2_v1 as source
 
+import scrappingBot.files as files
 from scrappingBot.classSelenium_v2 import SiteSelenium
 
 class ScrappingOlx(SiteSelenium):
     def __init__(self):
         self.sSel = SiteSelenium()
         self.sSel.openingMainPage('https://www.olx.com.br/')
+        self.download_page = 1
+        self.end_of_download = False
+        self.download_list = []
 
     def doing_nothing(self):
         print('\nEsperando o site carregar completamente\n')
-        time.sleep(30)
+        time.sleep(20)
 
-    def openingState(self,selected_state):
-        self.selected_state = selected_state
-        self.sSel.findElement(self,findByXPath=True,by='//*[@id="___gatsby"]/div[3]/div[3]/div[2]/div[1]/div/div[2]/div/a[' + str(selected_state) + ']')
+    def selecting_and_clicking_xpath(self,xpath):
+        self.sSel.findElement(self,findByXPath=True,by=xpath)
         self.sSel.clickingOnLink()
 
-    def openingRegion(self,selected_region):
-        self.selected_region = selected_region
-        # ['RJ','SP','MG','PR','RS','SC','ES','BA','PE','DF','CE','MS','GO','AM','RN','PB','PA','MT','AL','SE','MA','AC','RO','TO','PI','AP','RR','BRASIL']
-        if self.selected_state in [1]:
-            xpath = '//*[@id="column-main-content"]/div[2]/div/div[2]/div/div/div[' + str(selected_region) + ']/a'
-            # //*[@id="column-main-content"]/div[2]/div/div[2]/div/div/div[2]/a
-
-    def openingCategory(self,selected_category):
-        self.selected_category = selected_category
-        self.sSel.findElement(self,findByXPath=True,by='//*[@id="left-side-main-content"]/div[2]/div/div/div[2]/div/div/div[1]/div/div[' + str(selected_category) + ']/a')
+    def selecting_and_clicking_name(self,name):
+        self.sSel.findElement(findByLinkText=True,by=name)
         self.sSel.clickingOnLink()
 
-        # //*[@id="column-main-content"]/div[2]/div/div[2]/div/div/div[1]/a
-        # //*[@id="column-main-content"]/div[2]/div/div[2]/div/div/div[2]/a
-        # //*[@id="column-main-content"]/div[2]/div/div[2]/div/div[1]/div/div/div/a
+    def trying_to_close_pop_up(self):
+        try:
+            xpath = '//*[@id="root"]/div[5]/div/div/div[2]/div/div/div/div[1]/svg'
+            self. selecting_and_clicking_xpath(xpath)
+        except:
+            pass
+
+    def openingState(self,selected_state_xpath_index):
+        self.selected_state_xpath_index = selected_state_xpath_index
+        xpath = '//*[@id="___gatsby"]/div[3]/div[3]/div[2]/div[1]/div/div[2]/div/a[' + str(selected_state_xpath_index) + ']'
+        self. selecting_and_clicking_xpath(xpath)
+
+    def openingRegion(self,selected_region_name):
+        self.selected_region_name = selected_region_name
+        self.selecting_and_clicking_name(selected_region_name)
+
+    def openingSubRegion(self,selected_sub_region_name):
+        self.selected_sub_region_name = selected_sub_region_name
+        self.selecting_and_clicking_name(selected_sub_region_name)
+
+    def openingCategory(self,selected_category_xpath_index):
+        self.selected_category_xpath_index = selected_category_xpath_index
+        xpath = '//*[@id="left-side-main-content"]/div[2]/div/div/div[2]/div/div/div[1]/div/div[' + str(selected_category_xpath_index) + ']/a'
+        self. selecting_and_clicking_xpath(xpath)
+
+    def switching_pages(self):
+        xpath = '//*[@id="column-main-content"]/div[18]/div/div[1]/ul/li[' + str(self.download_page) + ']/div/a'
+        self.trying_to_close_pop_up()
+        try:
+            self.selecting_and_clicking_xpath(xpath)
+            print('page number:',self.download_page)
+            time.sleep(20)
+        except:
+            self.end_of_download = True
+
+    def collecting_data(self):
+        self.download_list.append(self.sSel.getPageContents())
+        print(len(self.download_list))
+        time.sleep(5)
+        self.download_page += 1
+
+    def saving_data(self,extract_time, year, month, day, selected_state_name, selected_region_name, selected_sub_region_name, selected_category_name):
+        if selected_sub_region_name == 'Não_Aplicável':
+            file_name = 'olxSource_' + selected_state_name + '_' + selected_region_name + '_' + selected_category_name + '_' + extract_time + '.json'
+        else:
+            file_name = 'olxSource_' + selected_state_name + '_' + selected_region_name + '_' + selected_sub_region_name + '_' + selected_category_name + '_' + extract_time + '.json'
+        source = os.path.join(os.path.dirname(os.path.abspath(__file__)),'data', file_name)
+        if not(files.checkingIfExistsFile(source)):
+            files.creatingFile(False,source)
+            olx={year + month + day:{}}
+            with open(source,'w') as outfile:
+                json.dump(olx,outfile)
+        
+        data=fileLoad(source)
+        scalplCut=Cut(data)
+        dicts.wtGenericDict(source,scalplCut,[year + month + day],self.download_list)
 
     def closing_connection(self):
         self.sSel.closingDriver()
