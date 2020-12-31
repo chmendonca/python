@@ -19,7 +19,7 @@ import scrappingBot.importingData_class_v1 as impData
 # function1: This function concentrates all commands to execute the logic that
 #   will download the pages of the selection 
 # =============================================================================
-def importing_all(extract_time, year, month, day, selected_state_name, selected_state_xpath_index, selected_region_name, selected_sub_region_name, selected_category_name, selected_category_xpath_index):
+def importing_all(extract_time, year, month, day, selected_state_name, selected_state_xpath_index, selected_region_name, selected_sub_region_name, selected_category_name, selected_category_xpath_index, selected_filter):
     sOlx = impData.ScrappingOlx()
     sOlx.doing_nothing()
     sOlx.trying_to_close_pop_up()
@@ -29,7 +29,7 @@ def importing_all(extract_time, year, month, day, selected_state_name, selected_
     sOlx.openingRegion(selected_region_name)
     sOlx.doing_nothing()
     sOlx.trying_to_close_pop_up()
-    if selected_sub_region_name == 'Não_Aplicável':
+    if selected_sub_region_name == 'Não Aplicável':
         pass
     else:
         sOlx.openingSubRegion(selected_sub_region_name)
@@ -38,13 +38,19 @@ def importing_all(extract_time, year, month, day, selected_state_name, selected_
     sOlx.openingCategory(selected_category_xpath_index)
     sOlx.trying_to_close_pop_up()
     sOlx.doing_nothing()
+    '''
+    if selected_filter == 2:
+        sOlx.filtering_around_places()
+    '''
     while not(sOlx.end_of_download):
         sOlx.collecting_data()
         sOlx.switching_pages()
     sOlx.doing_nothing()
+    
+    input('hit enter to continue')
     sOlx.closing_connection()
     sOlx.saving_data(extract_time, year, month, day, selected_state_name, selected_region_name, selected_sub_region_name, selected_category_name)
-
+    
 # =============================================================================
 # Listing all available states in Brazil
 # Obs.: The option "Brazil" is not available because it requires speficic rules
@@ -175,6 +181,10 @@ if state_status and selected_region in range(1,len(regions)+1):
         category_number += 1
     selected_category = int(input('Escolha o número da categoria: '))
     print('\n')
+    print('1 - Todos os bairros e cidades')
+    print('2 - Filtrar por bairros / cidades')
+    selected_filter = int(input('Escolha o número do filtro: '))
+    print('\n')
 else:
     #sets the status to false to indicate that an invalid choice has been made
     region_status = False
@@ -196,11 +206,15 @@ if state_status and region_status and selected_category in range(1,len(categorie
         selected_sub_region_name = 'Não Aplicável'
     print('Sub-Região escolhida:', selected_sub_region_name)
     print('Categoria Escolhida:', selected_category_name)
+    if selected_filter == 1:
+        print('Filtro escolhido: Todos os bairros e cidades')
+    else:
+        print('Filtro escolhido: Filtrar por bairros / cidades')
     #getting the index in the list to set the xpath value
     selected_state_xpath_index = int(states.index(selected_state_name)) + 1
     selected_category_xpath_index = int(categories.index(selected_category_name)) + 1
 
-    importing_all(extract_time, str(now.year), str(now.month), str(now.day), selected_state_name, selected_state_xpath_index, selected_region_name.replace(' ','_'), selected_sub_region_name.replace(' ','_'), selected_category_name.replace(' ','_'), selected_category_xpath_index)
+    importing_all(extract_time, str(now.year), str(now.month), str(now.day), selected_state_name, selected_state_xpath_index, selected_region_name, selected_sub_region_name, selected_category_name, selected_category_xpath_index, selected_filter)
     
 else:
     #if any choice is invalid it sets a message to the user
@@ -208,3 +222,17 @@ else:
 
 fim = timeit.default_timer()
 print ('\n>>>>>>>>\nduracao: %f\n<<<<<<<<' % (fim - inicio))
+
+
+'''
+//*[@id="ad-list"]/li[6]/a/div/div[3]/div/h2
+//*[@id="ad-list"]/li[6]/a/div/div[3]/div/div/p
+//*[@id="ad-list"]/li[6]/a/div/div[3]/div/p/text()
+
+
+//*[@id="ad-list"]/li[7]/a/div/div[3]/div/h2
+//*[@id="ad-list"]/li[7]/a/div/div[3]/div/span
+
+
+
+'''

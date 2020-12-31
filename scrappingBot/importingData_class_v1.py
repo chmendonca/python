@@ -28,7 +28,7 @@ class ScrappingOlx(SiteSelenium):
 
     def doing_nothing(self):
         print('\nEsperando o site carregar completamente\n')
-        time.sleep(20)
+        time.sleep(30)
 
     def selecting_and_clicking_xpath(self,xpath):
         self.sSel.findElement(self,findByXPath=True,by=xpath)
@@ -63,6 +63,10 @@ class ScrappingOlx(SiteSelenium):
         xpath = '//*[@id="left-side-main-content"]/div[2]/div/div/div[2]/div/div/div[1]/div/div[' + str(selected_category_xpath_index) + ']/a'
         self. selecting_and_clicking_xpath(xpath)
 
+    def filtering_around_places(self):
+        xpath ='//*[@id="column-main-content"]/div[2]/div/div[2]/div/button'
+        self. selecting_and_clicking_xpath(xpath)
+
     def switching_pages(self):
         xpath = '//*[@id="column-main-content"]/div[18]/div/div[1]/ul/li[' + str(self.download_page) + ']/div/a'
         self.trying_to_close_pop_up()
@@ -75,15 +79,15 @@ class ScrappingOlx(SiteSelenium):
 
     def collecting_data(self):
         self.download_list.append(self.sSel.getPageContents())
-        print(len(self.download_list))
+        print('len_dw_list:',len(self.download_list))
         time.sleep(5)
         self.download_page += 1
 
     def saving_data(self,extract_time, year, month, day, selected_state_name, selected_region_name, selected_sub_region_name, selected_category_name):
-        if selected_sub_region_name == 'Não_Aplicável':
-            file_name = 'olxSource_' + selected_state_name + '_' + selected_region_name + '_' + selected_category_name + '_' + extract_time + '.json'
+        if selected_sub_region_name == 'Não Aplicável':
+            file_name = 'olxSource_' + selected_state_name + '_' + selected_region_name.replace(' ','_') + '_' + selected_category_name.replace(' ','_') + '_' + extract_time + '.json'
         else:
-            file_name = 'olxSource_' + selected_state_name + '_' + selected_region_name + '_' + selected_sub_region_name + '_' + selected_category_name + '_' + extract_time + '.json'
+            file_name = 'olxSource_' + selected_state_name + '_' + selected_region_name.replace(' ','_') + '_' + selected_sub_region_name.replace(' ','_') + '_' + selected_category_name.replace(' ','_') + '_' + extract_time + '.json'
         source = os.path.join(os.path.dirname(os.path.abspath(__file__)),'data', file_name)
         if not(files.checkingIfExistsFile(source)):
             files.creatingFile(False,source)
